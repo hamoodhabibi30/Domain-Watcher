@@ -1,0 +1,14 @@
+{
+  "name": "domain-watcher",
+  "version": "1.0.0",
+  "main": "domain-watcher.js",
+  "scripts": {
+    "start": "node domain-watcher.js"
+  },
+  "dependencies": {
+    "node-fetch": "^3.3.2",
+    "node-cron": "^3.0.2",
+    "nodemailer": "^6.9.3"
+  },
+  "type": "module"
+}
