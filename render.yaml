@@ -1,14 +1,9 @@
 services:
-  - type: worker
-    name: domain-watcher
+  - type: web
+    name: domain-monitor
     env: node
     buildCommand: npm install
-    startCommand: node domain-watcher.js
-    plan: free
+    startCommand: node index.js
     envVars:
-      - key: EMAIL_USER
-        sync: false
-      - key: EMAIL_PASS
-        sync: false
-      - key: ALERT_EMAIL
-        sync: false
+      - key: NODE_ENV
+        value: production 
