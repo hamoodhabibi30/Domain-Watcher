@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: domain-watcher
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
+    plan: free
+    envVars:
+      - key: EMAIL_USER
+        sync: false
+      - key: EMAIL_PASS
+        sync: false
+      - key: ALERT_EMAIL
+        sync: false
