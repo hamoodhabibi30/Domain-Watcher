@@ -1,9 +1,9 @@
 services:
-  - type: web
+  - type: worker
     name: domain-watcher
     env: node
     buildCommand: npm install
-    startCommand: npm start
+    startCommand: node domain-watcher.js
     plan: free
     envVars:
       - key: EMAIL_USER
