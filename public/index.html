@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Domain Monitor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .domain-card {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .domain-card.live {
+            border-left: 4px solid #4CAF50;
+        }
+        .domain-card.error {
+            border-left: 4px solid #f44336;
+        }
+        .status {
+            font-weight: bold;
+        }
+        .live {
+            color: #4CAF50;
+        }
+        .error {
+            color: #f44336;
+        }
+        .timestamp {
+            color: #666;
+            font-size: 0.9em;
+        }
+        .refresh-button {
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+        .refresh-button:hover {
+            background-color: #1976D2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Domain Monitor</h1>
+        <button class="refresh-button" onclick="refreshStatus()">Refresh Status</button>
+        <div id="status"></div>
+    </div>
+
+    <script>
+        async function refreshStatus() {
+            try {
+                const response = await fetch('/api/status');
+                const data = await response.json();
+                
+                const statusDiv = document.getElementById('status');
+                statusDiv.innerHTML = `
+                    <p class="timestamp">Last Updated: ${new Date(data.timestamp).toLocaleString()}</p>
+                    ${Object.entries(data.domains).map(([domain, info]) => `
+                        <div class="domain-card ${info.isLive ? 'live' : 'error'}">
+                            <h3>${domain}</h3>
+                            <p>Status: <span class="status ${info.isLive ? 'live' : 'error'}">${info.isLive ? 'Live' : 'Error'}</p>
+                            <p>Current Domain: ${info.currentDomain}</p>
+                            <p>Last Checked: ${new Date(info.lastChecked).toLocaleString()}</p>
+                        </div>
+                    `).join('')}
+                `;
+            } catch (error) {
+                console.error('Error fetching status:', error);
+            }
+        }
+
+        // Initial load
+        refreshStatus();
+        // Refresh every 30 seconds
+        setInterval(refreshStatus, 30000);
+    </script>
+</body>
+</html> 
