@@ -9,7 +9,7 @@ const port = process.env.PORT || 3000;
 // Domains to monitor
 let domains = [
     'vegamovies.bot',
-    'extramovies.page',
+    'extramovies.pages',
     'hdhub4u.football'
 ];
 
@@ -20,11 +20,8 @@ const domainMappingsFile = path.join(__dirname, 'domain-mappings.json');
 // Enable JSON parsing
 app.use(express.json());
 
-// Serve static files
-app.use(express.static('public'));
-
-// API endpoint to get current status
-app.get('/api/status', async (req, res) => {
+// Root endpoint - returns current status
+app.get('/', async (req, res) => {
     try {
         const states = await loadPreviousStates();
         const status = {
@@ -38,7 +35,9 @@ app.get('/api/status', async (req, res) => {
                 isLive: state?.isLive || false,
                 status: state?.status || 'unknown',
                 currentDomain: state?.currentDomain || domain,
-                lastChecked: state?.timestamp || 'never'
+                lastChecked: state?.timestamp || 'never',
+                originalDomain: state?.originalDomain || domain,
+                redirectUrl: state?.redirectUrl || null
             };
         }
 
@@ -49,7 +48,7 @@ app.get('/api/status', async (req, res) => {
 });
 
 // API endpoint to get domain mappings
-app.get('/api/mappings', async (req, res) => {
+app.get('/mappings', async (req, res) => {
     try {
         const mappings = await loadDomainMappings();
         res.json(mappings);
@@ -189,27 +188,6 @@ async function compareAndNotify(domain, oldState, newState) {
     return hasChanged;
 }
 
-// Function to display current status
-function displayStatus(states) {
-    const status = {
-        timestamp: new Date().toISOString(),
-        domains: {}
-    };
-
-    for (const domain of domains) {
-        const state = states[domain];
-        status.domains[domain] = {
-            isLive: state?.isLive || false,
-            status: state?.status || 'unknown',
-            currentDomain: state?.currentDomain || domain,
-            lastChecked: state?.timestamp || 'never'
-        };
-    }
-
-    console.log('\nCurrent Domain Status:');
-    console.log(JSON.stringify(status, null, 2));
-}
-
 // Main monitoring function
 async function monitorDomains() {
     console.log('Starting domain monitoring...');
@@ -227,7 +205,6 @@ async function monitorDomains() {
         }
         
         await saveStates(newStates);
-        displayStatus(newStates);
         
         // Wait for 5 minutes before next check
         console.log('\nWaiting 5 minutes before next check...');
