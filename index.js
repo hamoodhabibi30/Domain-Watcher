@@ -9,7 +9,7 @@ const port = process.env.PORT || 3000;
 // Domains to monitor
 let domains = [
     'vegamovies.bot',
-    'extramovies.pages',
+    'extramovies.page',
     'hdhub4u.football'
 ];
 
